@@ -1,4 +1,6 @@
 import tkinter as tk
+import random
+
 from color_converter import rgb_to_hsv, hsv_to_rgb
 
 
@@ -8,12 +10,11 @@ from color_converter import rgb_to_hsv, hsv_to_rgb
 
 root = tk.Tk()
 root.title("RGB-HSV Color Studio")
-root.geometry("1000x760")
+root.geometry("1000x840")
 root.resizable(False, False)
 
 
-# This flag prevents RGB and HSV callbacks
-# from continuously triggering each other.
+# Prevent RGB and HSV callbacks from triggering each other endlessly
 updating = False
 
 
@@ -22,10 +23,6 @@ updating = False
 # -----------------------------
 
 def set_preview_color(r, g, b):
-    """
-    Update the preview area and HEX text.
-    """
-
     color = f"#{r:02x}{g:02x}{b:02x}"
 
     preview.config(bg=color)
@@ -36,18 +33,6 @@ def set_preview_color(r, g, b):
 
 
 def update_from_rgb(value=None):
-    """
-    Called when any RGB slider changes.
-
-    RGB
-      ↓
-    RGB -> HSV
-      ↓
-    Update HSV sliders
-      ↓
-    Update preview
-    """
-
     global updating
 
     if updating:
@@ -55,20 +40,20 @@ def update_from_rgb(value=None):
 
     updating = True
 
-    # Read RGB slider values
+    # Read RGB values
     r = red_slider.get()
     g = green_slider.get()
     b = blue_slider.get()
 
-    # Convert RGB to HSV
+    # RGB -> HSV
     h, s, v = rgb_to_hsv(r, g, b)
 
-    # Update HSV sliders
+    # Synchronize HSV sliders
     hue_slider.set(round(h))
     saturation_slider.set(round(s))
     value_slider.set(round(v))
 
-    # Update text
+    # Update labels
     rgb_value_label.config(
         text=f"RGB: ({r}, {g}, {b})"
     )
@@ -77,25 +62,13 @@ def update_from_rgb(value=None):
         text=f"HSV: ({h:.1f}°, {s:.1f}%, {v:.1f}%)"
     )
 
-    # Update preview
+    # Update preview and HEX
     set_preview_color(r, g, b)
 
     updating = False
 
 
 def update_from_hsv(value=None):
-    """
-    Called when any HSV slider changes.
-
-    HSV
-      ↓
-    HSV -> RGB
-      ↓
-    Update RGB sliders
-      ↓
-    Update preview
-    """
-
     global updating
 
     if updating:
@@ -108,15 +81,15 @@ def update_from_hsv(value=None):
     s = saturation_slider.get()
     v = value_slider.get()
 
-    # Convert HSV to RGB
+    # HSV -> RGB
     r, g, b = hsv_to_rgb(h, s, v)
 
-    # Update RGB sliders
+    # Synchronize RGB sliders
     red_slider.set(r)
     green_slider.set(g)
     blue_slider.set(b)
 
-    # Update text
+    # Update labels
     rgb_value_label.config(
         text=f"RGB: ({r}, {g}, {b})"
     )
@@ -125,7 +98,75 @@ def update_from_hsv(value=None):
         text=f"HSV: ({h}°, {s}%, {v}%)"
     )
 
-    # Update preview
+    # Update preview and HEX
+    set_preview_color(r, g, b)
+
+    updating = False
+
+
+def reset_color():
+    global updating
+
+    updating = True
+
+    # Reset RGB
+    red_slider.set(0)
+    green_slider.set(0)
+    blue_slider.set(0)
+
+    # Reset HSV
+    hue_slider.set(0)
+    saturation_slider.set(0)
+    value_slider.set(0)
+
+    # Reset labels
+    rgb_value_label.config(
+        text="RGB: (0, 0, 0)"
+    )
+
+    hsv_value_label.config(
+        text="HSV: (0°, 0%, 0%)"
+    )
+
+    # Reset preview and HEX
+    set_preview_color(0, 0, 0)
+
+    updating = False
+
+
+def random_color():
+    global updating
+
+    updating = True
+
+    # Generate random RGB values
+    r = random.randint(0, 255)
+    g = random.randint(0, 255)
+    b = random.randint(0, 255)
+
+    # Update RGB sliders
+    red_slider.set(r)
+    green_slider.set(g)
+    blue_slider.set(b)
+
+    # Convert RGB to HSV
+    h, s, v = rgb_to_hsv(r, g, b)
+
+    # Update HSV sliders
+    hue_slider.set(round(h))
+    saturation_slider.set(round(s))
+    value_slider.set(round(v))
+
+    # Update labels
+    rgb_value_label.config(
+        text=f"RGB: ({r}, {g}, {b})"
+    )
+
+    hsv_value_label.config(
+        text=f"HSV: ({h:.1f}°, {s:.1f}%, {v:.1f}%)"
+    )
+
+    # Update preview and HEX
     set_preview_color(r, g, b)
 
     updating = False
@@ -310,6 +351,43 @@ hsv_value_label = tk.Label(
 )
 
 hsv_value_label.pack(pady=10)
+
+
+# -----------------------------
+# Buttons
+# -----------------------------
+
+buttons_frame = tk.Frame(root)
+
+buttons_frame.pack(pady=10)
+
+
+reset_button = tk.Button(
+    buttons_frame,
+    text="Reset",
+    font=("Arial", 11),
+    width=12,
+    command=reset_color
+)
+
+reset_button.pack(
+    side="left",
+    padx=10
+)
+
+
+random_button = tk.Button(
+    buttons_frame,
+    text="Random Color",
+    font=("Arial", 11),
+    width=12,
+    command=random_color
+)
+
+random_button.pack(
+    side="left",
+    padx=10
+)
 
 
 # -----------------------------
