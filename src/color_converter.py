@@ -1,5 +1,4 @@
 def rgb_to_hsv(r, g, b):
-    # Convert RGB from 0-255 to 0-1
     r = r / 255
     g = g / 255
     b = b / 255
@@ -8,7 +7,6 @@ def rgb_to_hsv(r, g, b):
     c_min = min(r, g, b)
     delta = c_max - c_min
 
-    # Hue
     if delta == 0:
         h = 0
     elif c_max == r:
@@ -18,20 +16,17 @@ def rgb_to_hsv(r, g, b):
     else:
         h = 60 * (((r - g) / delta) + 4)
 
-    # Saturation
     if c_max == 0:
         s = 0
     else:
         s = delta / c_max
 
-    # Value
     v = c_max
 
     return h, s * 100, v * 100
 
 
 def hsv_to_rgb(h, s, v):
-    # Convert S and V from percentage to 0-1
     s = s / 100
     v = v / 100
 
