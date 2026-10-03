@@ -144,7 +144,7 @@ rgb-hsv-color-studio/
 Clone the repository:
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/normal767/rgb-hsv-color-studio.git
 cd rgb-hsv-color-studio
 ```
 
